@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baiwangmaoyi.luckydraw.dao.mapper.DrawResultMapper" >
+  <resultMap id="BaseResultMap" type="com.baiwangmaoyi.luckydraw.entity.DrawResult" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="round_id" property="roundId" jdbcType="BIGINT" />
+    <result column="rule_id" property="ruleId" jdbcType="BIGINT" />
+    <result column="participant_id" property="participantId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, round_id, rule_id, participant_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from drawresult
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+<select id="selectExistDrawByRulesetId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM drawresult
+    WHERE drawresult.rule_id in (SELECT rule.id
+                                FROM rule, ruleset
+                                WHERE rule.ruleset_id =
+                                      ruleset.id and ruleset.id = #{rulesetId,jdbcType=BIGINT})
+    and drawresult.round_id = #{roundId,jdbcType=BIGINT}
+</select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from drawresult
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.baiwangmaoyi.luckydraw.entity.DrawResult" >
+    insert into drawresult (id, round_id, rule_id, 
+      participant_id)
+    values (#{id,jdbcType=BIGINT}, #{roundId,jdbcType=BIGINT}, #{ruleId,jdbcType=BIGINT}, 
+      #{participantId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.baiwangmaoyi.luckydraw.entity.DrawResult" >
+    insert into drawresult
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="roundId != null" >
+        round_id,
+      </if>
+      <if test="ruleId != null" >
+        rule_id,
+      </if>
+      <if test="participantId != null" >
+        participant_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="roundId != null" >
+        #{roundId,jdbcType=BIGINT},
+      </if>
+      <if test="ruleId != null" >
+        #{ruleId,jdbcType=BIGINT},
+      </if>
+      <if test="participantId != null" >
+        #{participantId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.baiwangmaoyi.luckydraw.entity.DrawResult" >
+    update drawresult
+    <set >
+      <if test="roundId != null" >
+        round_id = #{roundId,jdbcType=BIGINT},
+      </if>
+      <if test="ruleId != null" >
+        rule_id = #{ruleId,jdbcType=BIGINT},
+      </if>
+      <if test="participantId != null" >
+        participant_id = #{participantId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.baiwangmaoyi.luckydraw.entity.DrawResult" >
+    update drawresult
+    set round_id = #{roundId,jdbcType=BIGINT},
+      rule_id = #{ruleId,jdbcType=BIGINT},
+      participant_id = #{participantId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

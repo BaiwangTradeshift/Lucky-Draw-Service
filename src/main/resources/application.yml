@@ -1,0 +1,33 @@
+####################### Stream & Datasource Config ###########################
+spring:
+  application:
+    name: luckydraw-${spring.profiles.active:default}
+  datasource:
+    name: hikari1
+    username: ${USER_DB_PWD:porta}
+    password: ${USER_DB_USER:porta}
+    url: jdbc:mysql://${USER_DB_ADDRESS:localhost:3306}/luckydraw
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 50
+      connection-timeout: 30000
+      idle-timeout: 600000
+      minimum-idle: 50
+
+############################# Flyway Config ###########################
+flyway:
+  base-line-on-migrate: true
+  table: flyway_version
+  base-line-version: 1_201701021051
+  skip-default-resolvers: false
+  locations: classpath:db.migrations
+  is-enable-flyway-migration: true
+  out-of-order: false
+  repair: false
+  enabled: false
+
+server:
+  port: 19200
+
+logging:
+  config: classpath:logback-stdout.xml
