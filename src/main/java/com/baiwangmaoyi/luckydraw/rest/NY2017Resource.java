@@ -24,16 +24,16 @@ public class NY2017Resource {
     private NY2017Service ny2017Service;
 
     @POST
-    @Path("newround")
-    public Response startNewRound() {
-        this.ny2017Service.startNewRound();
+    @Path("newdrawround")
+    public Response startNewDrawRound() {
+        this.ny2017Service.startNewDrawRound();
         return Response.ok().build();
     }
 
     @GET
     @Path("currentround")
     public String currentRound() {
-        return String.valueOf(this.ny2017Service.getCurrentRound());
+        return String.valueOf(this.ny2017Service.getCurrentDrawRound());
 
     }
 
@@ -42,12 +42,7 @@ public class NY2017Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public NameList draw3rdPrize() {
         List<Participant> participantsList = ny2017Service.draw3rdPrize(10);
-        NameList nameList = new NameList();
-        List<String> list = nameList.getNames();
-        for (Participant participant : participantsList) {
-            list.add(participant.getDisplayName());
-        }
-        return nameList;
+        return convert2NameList(participantsList);
     }
 
     @POST
@@ -55,12 +50,7 @@ public class NY2017Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public NameList draw2ndbPrize() {
         List<Participant> participantsList = ny2017Service.draw2ndBPrize(7);
-        NameList nameList = new NameList();
-        List<String> list = nameList.getNames();
-        for (Participant participant : participantsList) {
-            list.add(participant.getDisplayName());
-        }
-        return nameList;
+        return convert2NameList(participantsList);
     }
 
     @POST
@@ -79,12 +69,7 @@ public class NY2017Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public NameList draw1stbPrize() {
         List<Participant> participantsList = ny2017Service.draw1stBPrize(3);
-        NameList nameList = new NameList();
-        List<String> list = nameList.getNames();
-        for (Participant participant : participantsList) {
-            list.add(participant.getDisplayName());
-        }
-        return nameList;
+        return convert2NameList(participantsList);
     }
 
     @POST
@@ -95,6 +80,38 @@ public class NY2017Resource {
         Participant participant = ny2017Service.draw1stAPrize(fpdm);
         NameList nameList = new NameList();
         nameList.getNames().add(participant.getDisplayName());
+        return nameList;
+    }
+
+    @POST
+    @Path("newgameround")
+    public Response startNewGameRound() {
+        this.ny2017Service.startNewGameRound();
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("game1")
+    @Produces(MediaType.APPLICATION_JSON)
+    public NameList startGame1() {
+        List<Participant> participantsList =  this.ny2017Service.drawGame1();
+        return convert2NameList(participantsList);
+    }
+
+    @POST
+    @Path("game2")
+    @Produces(MediaType.APPLICATION_JSON)
+    public NameList startGame2() {
+        List<Participant> participantsList =  this.ny2017Service.drawGame2();
+        return convert2NameList(participantsList);
+    }
+
+    private NameList convert2NameList(List<Participant> participantsList){
+        NameList nameList = new NameList();
+        List<String> list = nameList.getNames();
+        for (Participant participant : participantsList) {
+            list.add(participant.getDisplayName());
+        }
         return nameList;
     }
 }

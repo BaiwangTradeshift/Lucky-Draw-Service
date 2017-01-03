@@ -9,6 +9,7 @@ CREATE TABLE `rule` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT NULL,
   `ruleset_id` bigint(20) NOT NULL,
+  `max_count` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_Rule_Ruleset_idx` (`ruleset_id`),
   KEY `rule_name_index` (`name`),

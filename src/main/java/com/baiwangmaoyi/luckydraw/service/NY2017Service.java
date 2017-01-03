@@ -1,6 +1,9 @@
 package com.baiwangmaoyi.luckydraw.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,31 +43,72 @@ public class NY2017Service {
     @Autowired
     private RandomProvider randomProvider;
 
-    private Ruleset getCurrentRuleSet() {
+    private Ruleset getCurrentDrawRuleSet() {
         return rulesetDAO.selectByName("2017_NY");
     }
 
-    public long startNewRound() {
-        Ruleset ruleset = getCurrentRuleSet();
+    private Ruleset getCurrentGameRuleSet() {
+        return rulesetDAO.selectByName("2017_NY_GAME");
+    }
+
+
+    public long startNewGameRound() {
+        Ruleset ruleset = getCurrentGameRuleSet();
         return roundDAO.createNew(ruleset.getId());
     }
 
-    public long getCurrentRound() {
-        Ruleset ruleset = getCurrentRuleSet();
+    public long startNewDrawRound() {
+        Ruleset ruleset = getCurrentDrawRuleSet();
+        return roundDAO.createNew(ruleset.getId());
+    }
+
+    public long getCurrentDrawRound() {
+        Ruleset ruleset = getCurrentDrawRuleSet();
         Round round = this.roundDAO.selectMaxByRulesetId(ruleset.getId());
         if (round != null) {
             return round.getId();
         }
-        throw new RuntimeException("No round started as 2017 NY.");
+        throw new RuntimeException("No draw round started as 2017 NY.");
+    }
+
+    public long getCurrentGameRound() {
+        Ruleset ruleset = getCurrentGameRuleSet();
+        Round round = this.roundDAO.selectMaxByRulesetId(ruleset.getId());
+        if (round != null) {
+            return round.getId();
+        }
+        throw new RuntimeException("No game round started as 2017 NY.");
+    }
+
+    public List<Participant> drawGame1() {
+        return drawGamer("GAME_1",1);
+    }
+
+    public List<Participant> drawGame2() {
+        return drawGamer("GAME_2",2);
+    }
+
+    private List<Participant> drawGamer(String ruleName, int count) {
+        Ruleset ruleset = getCurrentGameRuleSet();
+        long currentRoundId = getCurrentGameRound();
+        List<DrawResult> pickedResult =
+                drawresultDAO.selectExistDrawByRulesetId(ruleset.getId(), currentRoundId);
+        Rule rule = ruleDAO.selectByName(ruleName, ruleset.getId());
+        List<Participant> list = participantDAO.getParticipantsByRulesetId(ruleset.getId());
+        List<Participant> candidateList = getCandidates(list, pickedResult);
+
+        List<Participant> pickedList = getGamerWithFPDM(candidateList, count);
+        updateDrawResult(pickedList, rule, currentRoundId);
+        return pickedList;
     }
 
     public Participant draw1stAPrize(String fpdm) {
         return draw2ndAPrize(fpdm);
     }
 
-    public List<Participant> draw1stBPrize(int count){
-        Ruleset ruleset = getCurrentRuleSet();
-        long currentRoundId = getCurrentRound();
+    public List<Participant> draw1stBPrize(int count) {
+        Ruleset ruleset = getCurrentDrawRuleSet();
+        long currentRoundId = getCurrentDrawRound();
         List<DrawResult> pickedResult =
                 drawresultDAO.selectExistDrawByRulesetId(ruleset.getId(), currentRoundId);
         Rule rule = ruleDAO.selectByName("1ST_PRIZE_B", ruleset.getId());
@@ -80,8 +124,8 @@ public class NY2017Service {
     }
 
     public Participant draw2ndAPrize(String fpdm) {
-        Ruleset ruleset = getCurrentRuleSet();
-        long currentRoundId = getCurrentRound();
+        Ruleset ruleset = getCurrentDrawRuleSet();
+        long currentRoundId = getCurrentDrawRound();
         List<DrawResult> pickedResult =
                 drawresultDAO.selectExistDrawByRulesetId(ruleset.getId(), currentRoundId);
         Rule rule = ruleDAO.selectByName("2ND_PRIZE_A", ruleset.getId());
@@ -97,8 +141,8 @@ public class NY2017Service {
     }
 
     public List<Participant> draw2ndBPrize(int count) {
-        Ruleset ruleset = getCurrentRuleSet();
-        long currentRoundId = getCurrentRound();
+        Ruleset ruleset = getCurrentDrawRuleSet();
+        long currentRoundId = getCurrentDrawRound();
         List<DrawResult> pickedResult =
                 drawresultDAO.selectExistDrawByRulesetId(ruleset.getId(), currentRoundId);
         Rule rule = ruleDAO.selectByName("2ND_PRIZE_B", ruleset.getId());
@@ -114,8 +158,8 @@ public class NY2017Service {
     }
 
     public List<Participant> draw3rdPrize(int count) {
-        Ruleset ruleset = getCurrentRuleSet();
-        long currentRoundId = getCurrentRound();
+        Ruleset ruleset = getCurrentDrawRuleSet();
+        long currentRoundId = getCurrentDrawRound();
         List<DrawResult> pickedResult =
                 drawresultDAO.selectExistDrawByRulesetId(ruleset.getId(), currentRoundId);
         Rule rule = ruleDAO.selectByName("3RD_PRIZE_20", ruleset.getId());
@@ -174,4 +218,26 @@ public class NY2017Service {
         return fulList.stream().filter(p -> fpdm.equals(p.getFirstName())).collect(Collectors.toList());
     }
 
+    private List<Participant> getGamerWithFPDM(List<Participant> fulList, int count) {
+        List<Participant> resultList = new ArrayList<>();
+        HashMap<String, List<Participant>> map = new HashMap<>();
+
+        for (Participant participant : fulList) {
+            String fpdm = participant.getFirstName();
+            map.putIfAbsent(fpdm, new ArrayList<>());
+            List<Participant> fpdmList = map.get(fpdm);
+            fpdmList.add(participant);
+        }
+
+        Set<String> keys = map.keySet();
+        for (String fpdm : keys) {
+            List<Participant> fpdmList = map.get(fpdm);
+            List<Participant> pickedList = this.randomProvider.pickRandomly(fpdmList, count);
+            if (pickedList.size() != count) {
+                throw new RuntimeException("fpdm:" + fpdm + " can't pick " + count + " gamer.");
+            }
+            resultList.addAll(pickedList);
+        }
+        return resultList;
+    }
 }

@@ -6,7 +6,7 @@ spring:
     name: hikari1
     username: ${USER_DB_PWD:porta}
     password: ${USER_DB_USER:porta}
-    url: jdbc:mysql://${USER_DB_ADDRESS:localhost:3306}/luckydraw
+    url: jdbc:mysql://${USER_DB_ADDRESS:localhost:3306}/luckydraw?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 50
@@ -24,7 +24,7 @@ flyway:
   is-enable-flyway-migration: true
   out-of-order: false
   repair: false
-  enabled: false
+  enabled: true
 
 server:
   port: 19200
