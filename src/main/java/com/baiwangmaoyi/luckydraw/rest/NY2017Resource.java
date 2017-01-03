@@ -1,6 +1,7 @@
 package com.baiwangmaoyi.luckydraw.rest;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -94,7 +95,7 @@ public class NY2017Resource {
     @Path("game1")
     @Produces(MediaType.APPLICATION_JSON)
     public NameList startGame1() {
-        List<Participant> participantsList =  this.ny2017Service.drawGame1();
+        List<Participant> participantsList = this.ny2017Service.drawGame1();
         return convert2NameList(participantsList);
     }
 
@@ -102,14 +103,30 @@ public class NY2017Resource {
     @Path("game2")
     @Produces(MediaType.APPLICATION_JSON)
     public NameList startGame2() {
-        List<Participant> participantsList =  this.ny2017Service.drawGame2();
+        List<Participant> participantsList = this.ny2017Service.drawGame2();
         return convert2NameList(participantsList);
     }
 
-    private NameList convert2NameList(List<Participant> participantsList){
+    private NameList convert2NameList(List<Participant> participantsList) {
+        List<Participant> sortedList = participantsList.stream().sorted((a, b) -> {
+            if (a.getFirstName().length() == b.getFirstName().length()) {
+                int fnCmp = a.getFirstName().compareTo(b.getFirstName());
+                if (fnCmp == 0) {
+                    if (a.getLastName().length() == b.getLastName().length()) {
+                        return a.getLastName().compareTo(b.getLastName());
+                    } else {
+                        return a.getLastName().length() - b.getLastName().length();
+                    }
+                } else {
+                    return fnCmp;
+                }
+            } else {
+                return a.getFirstName().length() - b.getFirstName().length();
+            }
+        }).collect(Collectors.toList());
         NameList nameList = new NameList();
         List<String> list = nameList.getNames();
-        for (Participant participant : participantsList) {
+        for (Participant participant : sortedList) {
             list.add(participant.getDisplayName());
         }
         return nameList;

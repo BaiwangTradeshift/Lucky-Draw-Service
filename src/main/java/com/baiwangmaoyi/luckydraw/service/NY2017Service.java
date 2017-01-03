@@ -197,7 +197,7 @@ public class NY2017Service {
                 this.drawresultDAO.create(roundId, rule.getId(), participant.getId());
             }
         } else {
-            throw new RuntimeException("Can't draw more then " + rule.getMaxCount() + "of " + rule.getName());
+            throw new RuntimeException("Can't draw more then " + rule.getMaxCount() + " of " + rule.getName());
         }
     }
 
@@ -240,4 +240,5 @@ public class NY2017Service {
         }
         return resultList;
     }
+
 }

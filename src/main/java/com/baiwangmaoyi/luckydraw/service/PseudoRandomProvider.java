@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
+@Profile("default")
 public class PseudoRandomProvider implements RandomProvider {
 
     public <T> List<T> pickRandomly(List<T> sourceList, int itemsToSelect) {
