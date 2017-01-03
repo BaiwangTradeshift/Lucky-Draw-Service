@@ -1,9 +1,11 @@
 package com.baiwangmaoyi.luckydraw.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,7 @@ public class NY2017Service {
     private RandomProvider randomProvider;
 
     private Ruleset getCurrentDrawRuleSet() {
-        return rulesetDAO.selectByName("2017_NY");
+        return rulesetDAO.selectByName("2017_NY_DRAW");
     }
 
     private Ruleset getCurrentGameRuleSet() {
@@ -103,7 +105,7 @@ public class NY2017Service {
     }
 
     public Participant draw1stAPrize(String fpdm) {
-        return draw2ndAPrize(fpdm);
+        return draw1FromFpdm("1ST_PRIZE_A", fpdm);
     }
 
     public List<Participant> draw1stBPrize(int count) {
@@ -124,11 +126,15 @@ public class NY2017Service {
     }
 
     public Participant draw2ndAPrize(String fpdm) {
+        return draw1FromFpdm("2ND_PRIZE_A", fpdm);
+    }
+
+    public Participant draw1FromFpdm(String ruleName, String fpdm){
         Ruleset ruleset = getCurrentDrawRuleSet();
         long currentRoundId = getCurrentDrawRound();
         List<DrawResult> pickedResult =
                 drawresultDAO.selectExistDrawByRulesetId(ruleset.getId(), currentRoundId);
-        Rule rule = ruleDAO.selectByName("2ND_PRIZE_A", ruleset.getId());
+        Rule rule = ruleDAO.selectByName(ruleName, ruleset.getId());
         List<Participant> list = participantDAO.getParticipantsByRulesetId(ruleset.getId());
         List<Participant> candidateList = getCandidates(list, pickedResult);
         List<Participant> candicateListWFpdm = getCandidateWithFPDM(candidateList, fpdm);
@@ -139,6 +145,7 @@ public class NY2017Service {
 
         return pickedList.get(0);
     }
+
 
     public List<Participant> draw2ndBPrize(int count) {
         Ruleset ruleset = getCurrentDrawRuleSet();
@@ -219,7 +226,7 @@ public class NY2017Service {
     }
 
     private List<Participant> getGamerWithFPDM(List<Participant> fulList, int count) {
-        List<Participant> resultList = new ArrayList<>();
+        //List<Participant> resultList = new ArrayList<>();
         HashMap<String, List<Participant>> map = new HashMap<>();
 
         for (Participant participant : fulList) {
@@ -229,7 +236,12 @@ public class NY2017Service {
             fpdmList.add(participant);
         }
 
-        Set<String> keys = map.keySet();
+        List<Participant> resultList =map.entrySet().stream().parallel()
+                .map(entry -> this.randomProvider.pickRandomly(entry.getValue(), count))
+                .flatMap(Collection::stream).collect(Collectors.toList());
+
+       /* Set<String> keys = map.keySet();
+
         for (String fpdm : keys) {
             List<Participant> fpdmList = map.get(fpdm);
             List<Participant> pickedList = this.randomProvider.pickRandomly(fpdmList, count);
@@ -237,7 +249,7 @@ public class NY2017Service {
                 throw new RuntimeException("fpdm:" + fpdm + " can't pick " + count + " gamer.");
             }
             resultList.addAll(pickedList);
-        }
+        }*/
         return resultList;
     }
 
