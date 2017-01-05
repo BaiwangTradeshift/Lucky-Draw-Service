@@ -19,7 +19,7 @@
         select
         <include refid="Base_Column_List" />
         from round
-        where id = (select max(id) from round where #{rulesetId,jdbcType=BIGINT})
+        where id = (select max(id) from round where ruleset_id = #{rulesetId,jdbcType=BIGINT})
     </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from round

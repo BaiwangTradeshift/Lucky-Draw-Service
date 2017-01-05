@@ -15,6 +15,8 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.baiwangmaoyi.luckydraw.dto.NameList;
+import com.baiwangmaoyi.luckydraw.dto.ResultDTO;
+import com.baiwangmaoyi.luckydraw.entity.DrawResult;
 import com.baiwangmaoyi.luckydraw.entity.Participant;
 import com.baiwangmaoyi.luckydraw.service.NY2017Service;
 
@@ -32,17 +34,24 @@ public class NY2017Resource {
     }
 
     @GET
-    @Path("currentround")
-    public String currentRound() {
+    @Path("currentdrawround")
+    public String currentDrawRound() {
         return String.valueOf(this.ny2017Service.getCurrentDrawRound());
 
+    }
+
+    @GET
+    @Path("drawresult")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ResultDTO> getAllPrizeResult() {
+        return ny2017Service.getAllPrize();
     }
 
     @POST
     @Path("3rdprize")
     @Produces(MediaType.APPLICATION_JSON)
     public NameList draw3rdPrize() {
-        List<Participant> participantsList = ny2017Service.draw3rdPrize(10);
+        List<Participant> participantsList = ny2017Service.draw3rdPrize(1);
         return convert2NameList(participantsList);
     }
 
@@ -50,7 +59,7 @@ public class NY2017Resource {
     @Path("2ndbprize")
     @Produces(MediaType.APPLICATION_JSON)
     public NameList draw2ndbPrize() {
-        List<Participant> participantsList = ny2017Service.draw2ndBPrize(7);
+        List<Participant> participantsList = ny2017Service.draw2ndBPrize(1);
         return convert2NameList(participantsList);
     }
 
@@ -69,7 +78,7 @@ public class NY2017Resource {
     @Path("1stbprize")
     @Produces(MediaType.APPLICATION_JSON)
     public NameList draw1stbPrize() {
-        List<Participant> participantsList = ny2017Service.draw1stBPrize(3);
+        List<Participant> participantsList = ny2017Service.draw1stBPrize(1);
         return convert2NameList(participantsList);
     }
 
@@ -89,6 +98,12 @@ public class NY2017Resource {
     public Response startNewGameRound() {
         this.ny2017Service.startNewGameRound();
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("currentgameround")
+    public String currentGameRound() {
+        return String.valueOf(this.ny2017Service.getCurrentGameRound());
     }
 
     @POST

@@ -17,6 +17,7 @@ import com.baiwangmaoyi.luckydraw.dao.ParticipantDAO;
 import com.baiwangmaoyi.luckydraw.dao.RoundDAO;
 import com.baiwangmaoyi.luckydraw.dao.RuleDAO;
 import com.baiwangmaoyi.luckydraw.dao.RulesetDAO;
+import com.baiwangmaoyi.luckydraw.dto.ResultDTO;
 import com.baiwangmaoyi.luckydraw.entity.DrawResult;
 import com.baiwangmaoyi.luckydraw.entity.Participant;
 import com.baiwangmaoyi.luckydraw.entity.Round;
@@ -87,7 +88,7 @@ public class NY2017Service {
     }
 
     public List<Participant> drawGame2() {
-        return drawGamer("GAME_2",2);
+        return drawGamer("GAME_2",1);
     }
 
     private List<Participant> drawGamer(String ruleName, int count) {
@@ -253,4 +254,24 @@ public class NY2017Service {
         return resultList;
     }
 
+    public List<ResultDTO> getAllPrize(){
+        Ruleset ruleset = getCurrentDrawRuleSet();
+        long currentRoundId = getCurrentDrawRound();
+        List<DrawResult> pickedResult =
+                drawresultDAO.selectExistDrawByRulesetId(ruleset.getId(), currentRoundId);
+        List<Participant> fullParList = participantDAO.getParticipantsByRulesetId(ruleset.getId());
+
+        List<ResultDTO> resultList =  pickedResult.stream().map(d -> {
+            Participant participant =
+                    fullParList.stream().filter(p-> d.getParticipantId().equals(p.getId()))
+                            .findFirst().get();
+            Rule rule = ruleDAO.selectById(d.getRuleId());
+            ResultDTO resultDTO = new ResultDTO();
+            resultDTO.setRoundId(currentRoundId);
+            resultDTO.setRuleName(rule!=null? rule.getName():"");
+            resultDTO.setParticipantName(participant.getDisplayName());
+            return resultDTO;
+        }).collect(Collectors.toList());
+        return resultList;
+    }
 }
