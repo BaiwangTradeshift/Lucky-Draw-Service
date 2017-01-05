@@ -17,7 +17,7 @@ public class RemoteRandomProviderTest {
     private List<String> parList = new ArrayList<>();
     private HashMap<String, AtomicLong> resultMap = new HashMap<>();
 
-    private static final int TOTAL_ROUND = 100;
+    private static final int TOTAL_ROUND = 500;
     private static final int EACH_ROUND = 10;
 
     @Before
@@ -31,7 +31,7 @@ public class RemoteRandomProviderTest {
     }
 
     @Test
-    public void testVariance() {
+    public void testVariance() throws InterruptedException {
         for (int i = 0; i < TOTAL_ROUND; i++) {
             List<String> pickedList = privider.pickRandomly(parList, EACH_ROUND);
             System.out.println("Round " + i);
@@ -39,6 +39,7 @@ public class RemoteRandomProviderTest {
                 resultMap.putIfAbsent(par, new AtomicLong(0L));
                 AtomicLong count = resultMap.get(par);
                 count.getAndIncrement();
+                Thread.sleep(500);
             }
         }
 

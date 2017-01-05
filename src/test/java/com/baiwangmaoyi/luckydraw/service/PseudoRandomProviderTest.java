@@ -18,7 +18,7 @@ public class PseudoRandomProviderTest {
     private List<String> parList = new ArrayList<>();
     private HashMap<String, AtomicLong> resultMap = new HashMap<>();
 
-    private static final int TOTAL_ROUND = 100;
+    private static final int TOTAL_ROUND = 500;
     private static final int EACH_ROUND = 10;
 
     @Before

@@ -10,4 +10,5 @@ public interface DrawresultDAO {
 
     List<DrawResult> selectExistDrawByRulesetId(long rulesetId, long roundId);
 
+    void deleteById(long ids);
 }

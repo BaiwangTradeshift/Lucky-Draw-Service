@@ -2,6 +2,8 @@ package com.baiwangmaoyi.luckydraw.dto;
 
 public class ResultDTO {
 
+    private Long drawResultId;
+
     private Long roundId;
 
     private String ruleName;
@@ -32,4 +34,11 @@ public class ResultDTO {
         this.participantName = participantName;
     }
 
+    public Long getDrawResultId() {
+        return drawResultId;
+    }
+
+    public void setDrawResultId(Long drawResultId) {
+        this.drawResultId = drawResultId;
+    }
 }

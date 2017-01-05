@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -16,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.baiwangmaoyi.luckydraw.dto.NameList;
 import com.baiwangmaoyi.luckydraw.dto.ResultDTO;
-import com.baiwangmaoyi.luckydraw.entity.DrawResult;
 import com.baiwangmaoyi.luckydraw.entity.Participant;
 import com.baiwangmaoyi.luckydraw.service.NY2017Service;
 
@@ -120,6 +121,13 @@ public class NY2017Resource {
     public NameList startGame2() {
         List<Participant> participantsList = this.ny2017Service.drawGame2();
         return convert2NameList(participantsList);
+    }
+
+    @DELETE
+    @Path("prize/{drawResultId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void delete(@PathParam("drawResultId") long drawResultId) {
+        this.ny2017Service.deletePrize(drawResultId);
     }
 
     private NameList convert2NameList(List<Participant> participantsList) {

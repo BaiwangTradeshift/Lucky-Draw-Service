@@ -30,4 +30,8 @@ public class MyBatisDrawresultDAO implements DrawresultDAO{
         return this.drawResultMapper.selectExistDrawByRulesetId(rulesetId, roundId);
     }
 
+    @Override
+    public void deleteById(long id) {
+        this.drawResultMapper.deleteByPrimaryKey(id);
+    }
 }

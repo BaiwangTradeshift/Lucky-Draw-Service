@@ -183,6 +183,11 @@ public class NY2017Service {
         return pickedList;
     }
 
+    public void deletePrize(long drawResultId){
+        drawresultDAO.deleteById(drawResultId);
+    }
+
+
     private void updateDrawResult(List<Participant> pickedList, Rule rule, long roundId) {
         List<DrawResult> alreadyPickedParticipants =
                 drawresultDAO.selectExistDrawByRulesetId(rule.getRulesetId(), roundId);
@@ -270,6 +275,7 @@ public class NY2017Service {
             resultDTO.setRoundId(currentRoundId);
             resultDTO.setRuleName(rule!=null? rule.getName():"");
             resultDTO.setParticipantName(participant.getDisplayName());
+            resultDTO.setDrawResultId(d.getId());
             return resultDTO;
         }).collect(Collectors.toList());
         return resultList;
