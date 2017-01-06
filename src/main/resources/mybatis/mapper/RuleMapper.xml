@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baiwangmaoyi.luckydraw.dao.mapper.RuleMapper" >
+  <resultMap id="BaseResultMap" type="com.baiwangmaoyi.luckydraw.entity.Rule" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="max_count" property="maxCount" jdbcType="INTEGER" />
+    <result column="ruleset_id" property="rulesetId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, max_count, ruleset_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from rule
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="selectByName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from rule
+        where name = #{name,jdbcType=VARCHAR} and ruleset_id = #{rulesetId,jdbcType=BIGINT}
+    </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from rule
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.baiwangmaoyi.luckydraw.entity.Rule" >
+    insert into rule (id, name, max_count, 
+      ruleset_id)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{maxCount,jdbcType=INTEGER}, 
+      #{rulesetId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.baiwangmaoyi.luckydraw.entity.Rule" >
+    insert into rule
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="maxCount != null" >
+        max_count,
+      </if>
+      <if test="rulesetId != null" >
+        ruleset_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="maxCount != null" >
+        #{maxCount,jdbcType=INTEGER},
+      </if>
+      <if test="rulesetId != null" >
+        #{rulesetId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.baiwangmaoyi.luckydraw.entity.Rule" >
+    update rule
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="maxCount != null" >
+        max_count = #{maxCount,jdbcType=INTEGER},
+      </if>
+      <if test="rulesetId != null" >
+        ruleset_id = #{rulesetId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.baiwangmaoyi.luckydraw.entity.Rule" >
+    update rule
+    set name = #{name,jdbcType=VARCHAR},
+      max_count = #{maxCount,jdbcType=INTEGER},
+      ruleset_id = #{rulesetId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

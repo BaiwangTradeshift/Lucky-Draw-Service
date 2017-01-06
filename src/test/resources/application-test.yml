@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/luckydraw_test?autoReconnect=true&useSSL=false
+    username: porta
+    password: porta
+
+
+############################# Flyway Config ###########################
+flyway:
+  base-line-on-migrate: true
+  table: flyway_version
+  base-line-version: 1_201608291250
+  skip-default-resolvers: false
+  locations: classpath:db.migrations
+  is-enable-flyway-migration: true
+  out-of-order: false
+  repair: false
